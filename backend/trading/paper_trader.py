@@ -37,7 +37,12 @@ class PaperTrader:
         self.stop_loss = stop_loss
         self.take_profit = take_profit
 
-        TradeLogger.log("BUY", price, self.balance)
+        TradeLogger.log(
+            action="BUY",
+            price=price,
+            balance=self.balance,
+            profit=0
+        )
 
         self.save()
 
@@ -51,21 +56,30 @@ class PaperTrader:
         if self.position != "LONG":
             return
 
-        # Percentage movement
+        # Calculate percentage gain/loss
         change_percent = (price - self.entry_price) / self.entry_price
 
         # Profit based on trade size
         profit = change_percent * self.trade_size
 
+        # Update balance
         self.balance += profit
 
-        TradeLogger.log("SELL", price, self.balance)
+        # Log trade INCLUDING profit
+        TradeLogger.log(
+            action="SELL",
+            price=price,
+            balance=self.balance,
+            profit=profit
+        )
 
         print("\n✅ PAPER SELL")
+        print(f"Entry Price : {self.entry_price:.2f}")
         print(f"Exit Price  : {price:.2f}")
         print(f"Profit/Loss : {profit:.2f} USDT")
-        print(f"Balance     : {self.balance:.2f} USDT")
+        print(f"New Balance : {self.balance:.2f} USDT")
 
+        # Reset position
         self.position = None
         self.entry_price = 0
         self.stop_loss = 0
