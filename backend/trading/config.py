@@ -1,25 +1,32 @@
-import ccxt
+# ======================================
+# TechXplorer AI Configuration
+# Version 0.2
+# ======================================
 
+# Exchange
+EXCHANGE = "binance"
 
-class ExchangeManager:
-    def __init__(self):
-        # Binance
-        self.binance = ccxt.binance({
-            "enableRateLimit": True,
-        })
+# Trading Pair
+SYMBOL = "BTC/USDT"
 
-        # MEXC
-        self.mexc = ccxt.mexc({
-            "enableRateLimit": True,
-        })
+# Timeframe
+TIMEFRAME = "5m"
 
-    def get_price(self, exchange_name, symbol="BTC/USDT"):
-        if exchange_name.lower() == "binance":
-            ticker = self.binance.fetch_ticker(symbol)
-        elif exchange_name.lower() == "mexc":
-            ticker = self.mexc.fetch_ticker(symbol)
-        else:
-            raise ValueError("Unsupported exchange")
+# Number of candles to download
+CANDLE_LIMIT = 100
 
-        return ticker["last"]
-    
+# Paper trading balance
+START_BALANCE = 100.0
+
+# Risk settings
+RISK_PERCENT = 2
+
+# Refresh interval (seconds)
+REFRESH_SECONDS = 30
+
+# Indicator settings
+EMA_FAST = 20
+EMA_SLOW = 50
+RSI_PERIOD = 14
+RSI_BUY = 30
+RSI_SELL = 70

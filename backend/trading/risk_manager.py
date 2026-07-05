@@ -1,34 +1,59 @@
 class RiskManager:
 
-    def __init__(self, risk_percent=1.0):
+    def __init__(
+        self,
+        risk_percent=1.0,
+        atr_multiplier_sl=2.0,
+        atr_multiplier_tp=3.0
+    ):
         self.risk_percent = risk_percent
+        self.atr_multiplier_sl = atr_multiplier_sl
+        self.atr_multiplier_tp = atr_multiplier_tp
 
     def calculate_risk_amount(self, balance):
         """
-        Calculate how much money we are willing to risk.
-        Example:
-        Balance = $100
-        Risk = 1%
-        Risk Amount = $1
+        Amount of money to risk per trade.
         """
         return balance * (self.risk_percent / 100)
 
-    def calculate_stop_loss(self, entry_price, stop_loss_percent=2):
+    def calculate_stop_loss(
+        self,
+        entry_price,
+        atr=None,
+        stop_loss_percent=2
+    ):
         """
-        Calculate Stop Loss price.
-        Example:
-        Entry = 60000
-        Stop Loss = 2%
-        Result = 58800
+        Calculate Stop Loss.
+
+        If ATR is available:
+            Stop Loss = Entry - (ATR × Multiplier)
+
+        Otherwise:
+            Use fixed percentage.
         """
+
+        if atr is not None:
+            return entry_price - (atr * self.atr_multiplier_sl)
+
         return entry_price * (1 - stop_loss_percent / 100)
 
-    def calculate_take_profit(self, entry_price, take_profit_percent=4):
+    def calculate_take_profit(
+        self,
+        entry_price,
+        atr=None,
+        take_profit_percent=4
+    ):
         """
-        Calculate Take Profit price.
-        Example:
-        Entry = 60000
-        Take Profit = 4%
-        Result = 62400
+        Calculate Take Profit.
+
+        If ATR is available:
+            Take Profit = Entry + (ATR × Multiplier)
+
+        Otherwise:
+            Use fixed percentage.
         """
+
+        if atr is not None:
+            return entry_price + (atr * self.atr_multiplier_tp)
+
         return entry_price * (1 + take_profit_percent / 100)

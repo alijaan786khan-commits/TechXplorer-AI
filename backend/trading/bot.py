@@ -23,32 +23,66 @@ print("=" * 60)
 
 while True:
     try:
-        # Download market data
-        candles = exchange.get_ohlcv("binance", "BTC/USDT", "5m", 100)
+        # ==========================
+        # Download Market Data
+        # ==========================
+        candles = exchange.get_ohlcv(
+            "binance",
+            "BTC/USDT",
+            "5m",
+            100
+        )
 
-        # Calculate indicators
+        # ==========================
+        # Calculate Indicators
+        # ==========================
         df = Indicators.calculate_indicators(candles)
         latest = df.iloc[-1]
 
-        # Get trading signal
+        # ==========================
+        # Get Trading Signal
+        # ==========================
         signal, reason = TradingStrategy.signal(
             latest["RSI"],
             latest["EMA20"],
-            latest["EMA50"]
+            latest["EMA50"],
+            latest["MACD"],
+            latest["MACD_SIGNAL"],
+            latest["close"],
+            latest["BB_UPPER"],
+            latest["BB_LOWER"]
         )
 
-        # Market trend
-        trend = "BULLISH" if latest["EMA20"] > latest["EMA50"] else "BEARISH"
-
-        # Risk calculations
-        risk_amount = risk.calculate_risk_amount(trader.balance)
-        stop_loss = risk.calculate_stop_loss(latest["close"])
-        take_profit = risk.calculate_take_profit(latest["close"])
+        # ==========================
+        # Market Trend
+        # ==========================
+        trend = (
+            "BULLISH"
+            if latest["EMA20"] > latest["EMA50"]
+            else "BEARISH"
+        )
 
         # ==========================
-        # Execute Trades
+        # Risk Management
         # ==========================
+        risk_amount = risk.calculate_risk_amount(
+            trader.balance
+        )
 
+        # ATR-based Stop Loss & Take Profit
+        stop_loss = risk.calculate_stop_loss(
+            latest["close"],
+            latest["ATR"]
+        )
+
+        take_profit = risk.calculate_take_profit(
+            latest["close"],
+            latest["ATR"]
+        )
+
+        # ==========================
+        # Execute Trade
+        # ==========================
         if signal == "BUY":
             trader.buy(
                 latest["close"],
@@ -57,12 +91,31 @@ while True:
             )
 
         elif signal == "SELL":
-            trader.sell(latest["close"])
+            trader.sell(
+                latest["close"]
+            )
 
         # Check Stop Loss / Take Profit
-        trader.check_exit(latest["close"])
+        trader.check_exit(
+            latest["close"]
+        )
 
-        # Signal color
+        # ==========================
+        # Statistics
+        # ==========================
+        stats = Statistics.get_stats()
+
+        if stats["total"] > 0:
+            win_rate = (
+                stats["wins"] /
+                stats["total"]
+            ) * 100
+        else:
+            win_rate = 0
+
+        # ==========================
+        # Signal Color
+        # ==========================
         if signal == "BUY":
             signal_color = Fore.GREEN
         elif signal == "SELL":
@@ -70,15 +123,9 @@ while True:
         else:
             signal_color = Fore.YELLOW
 
-        # Get Statistics
-        stats = Statistics.get_stats()
-
-        if stats["total"] > 0:
-            win_rate = (stats["wins"] / stats["total"]) * 100
-        else:
-            win_rate = 0
-
+        # ==========================
         # Display
+        # ==========================
         print("\n" * 2)
         print("=" * 60)
         print("TECHXPLORER AI PAPER TRADING BOT")
@@ -86,8 +133,18 @@ while True:
 
         print(f"Time         : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print(f"BTC Price    : {latest['close']:.2f}")
+
         print(f"EMA20        : {latest['EMA20']:.2f}")
         print(f"EMA50        : {latest['EMA50']:.2f}")
+
+        print(f"MACD         : {latest['MACD']:.4f}")
+        print(f"MACD SIGNAL  : {latest['MACD_SIGNAL']:.4f}")
+
+        print(f"BB UPPER     : {latest['BB_UPPER']:.2f}")
+        print(f"BB LOWER     : {latest['BB_LOWER']:.2f}")
+
+        print(f"ATR          : {latest['ATR']:.2f}")
+
         print(f"TREND        : {trend}")
         print(f"RSI          : {latest['RSI']:.2f}")
 
@@ -99,6 +156,7 @@ while True:
         print(f"ENTRY PRICE  : {trader.entry_price:.2f}")
         print(f"STOP LOSS    : {trader.stop_loss:.2f}")
         print(f"TAKE PROFIT  : {trader.take_profit:.2f}")
+
         print(f"RISK AMOUNT  : ${risk_amount:.2f}")
 
         print("\nTRADE STATISTICS")
