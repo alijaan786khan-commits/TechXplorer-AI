@@ -29,7 +29,7 @@ while True:
         candles = exchange.get_ohlcv(
             "binance",
             "BTC/USDT",
-            "5m",
+            "1h",  # Changed to 1h for better signals
             100
         )
 
@@ -46,11 +46,17 @@ while True:
             latest["RSI"],
             latest["EMA20"],
             latest["EMA50"],
+            latest["EMA200"],
             latest["MACD"],
             latest["MACD_SIGNAL"],
+            latest["MACD_HIST"],
             latest["close"],
             latest["BB_UPPER"],
-            latest["BB_LOWER"]
+            latest["BB_MIDDLE"],
+            latest["BB_LOWER"],
+            latest["ATR"],
+            latest["volume"],
+            latest["VOLUME_SMA"]
         )
 
         # ==========================
@@ -136,11 +142,13 @@ while True:
 
         print(f"EMA20        : {latest['EMA20']:.2f}")
         print(f"EMA50        : {latest['EMA50']:.2f}")
+        print(f"EMA200       : {latest['EMA200']:.2f}")
 
         print(f"MACD         : {latest['MACD']:.4f}")
         print(f"MACD SIGNAL  : {latest['MACD_SIGNAL']:.4f}")
 
         print(f"BB UPPER     : {latest['BB_UPPER']:.2f}")
+        print(f"BB MIDDLE    : {latest['BB_MIDDLE']:.2f}")
         print(f"BB LOWER     : {latest['BB_LOWER']:.2f}")
 
         print(f"ATR          : {latest['ATR']:.2f}")
@@ -151,7 +159,7 @@ while True:
         print(signal_color + f"SIGNAL       : {signal}")
         print(f"REASON       : {reason}")
 
-        print(f"BALANCE      : ${trader.balance:.2f}")
+        print(f"\nBALANCE      : ${trader.balance:.2f}")
         print(f"POSITION     : {trader.position}")
         print(f"ENTRY PRICE  : {trader.entry_price:.2f}")
         print(f"STOP LOSS    : {trader.stop_loss:.2f}")
@@ -167,9 +175,9 @@ while True:
         print(f"TOTAL PROFIT : ${stats['profit']:.2f}")
 
         print("=" * 60)
-        print("Checking market again in 30 seconds...")
+        print("Checking market again in 60 seconds...")
 
-        time.sleep(30)
+        time.sleep(60)  # Changed from 30 to 60 seconds for 1H strategy
 
     except KeyboardInterrupt:
         print("\nBot stopped.")
