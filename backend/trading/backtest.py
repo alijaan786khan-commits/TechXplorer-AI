@@ -3,25 +3,38 @@ from indicators import Indicators
 from strategy import TradingStrategy
 from backtester import Backtester
 
+print("=" * 60)
+print("🚀 TECHXPLORER AI BACKTEST STARTED")
+print("=" * 60)
+print("\nDownloading historical data from Binance...")
+
 # Download historical data
 exchange = ExchangeManager()
 
-candles = exchange.get_ohlcv(
-    "binance",
-    "BTC/USDT",
-    "5m",
-    500
-)
+try:
+    candles = exchange.get_ohlcv(
+        "binance",
+        "BTC/USDT",
+        "5m",
+        500
+    )
+    print(f"✅ Downloaded {len(candles)} candles\n")
+except Exception as e:
+    print(f"❌ Error downloading data: {e}")
+    exit(1)
 
 # Calculate indicators
-
+print("Calculating indicators...")
 df = Indicators.calculate_indicators(candles)
+print(f"✅ Indicators calculated\n")
 
 # Create backtester
 backtester = Backtester(100)
 
+print("Running backtest on historical data...\n")
+
 # Loop through historical candles
-for _, row in df.iterrows():
+for idx, (_, row) in enumerate(df.iterrows()):
     if row.isnull().any():
         continue
 
@@ -47,4 +60,7 @@ for _, row in df.iterrows():
     elif signal == "SELL":
         backtester.sell(row["close"])
 
+print(f"✅ Processed {idx + 1} candles\n")
+
+# Print results
 backtester.report()
