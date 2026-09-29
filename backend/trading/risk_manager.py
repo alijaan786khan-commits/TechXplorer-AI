@@ -2,9 +2,9 @@ class RiskManager:
 
     def __init__(
         self,
-        risk_percent=1.0,
-        atr_multiplier_sl=2.0,
-        atr_multiplier_tp=3.0
+        risk_percent=2.0,  # Increased from 1.0 to 2.0
+        atr_multiplier_sl=1.5,  # Tightened from 2.0 to 1.5
+        atr_multiplier_tp=3.0  # Keep at 3.0 for better risk/reward (1:2 ratio)
     ):
         self.risk_percent = risk_percent
         self.atr_multiplier_sl = atr_multiplier_sl
@@ -32,7 +32,7 @@ class RiskManager:
             Use fixed percentage.
         """
 
-        if atr is not None:
+        if atr is not None and atr > 0:
             return entry_price - (atr * self.atr_multiplier_sl)
 
         return entry_price * (1 - stop_loss_percent / 100)
@@ -53,7 +53,7 @@ class RiskManager:
             Use fixed percentage.
         """
 
-        if atr is not None:
+        if atr is not None and atr > 0:
             return entry_price + (atr * self.atr_multiplier_tp)
 
         return entry_price * (1 + take_profit_percent / 100)
