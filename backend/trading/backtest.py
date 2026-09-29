@@ -6,16 +6,16 @@ from backtester import Backtester
 print("=" * 60)
 print("🚀 TECHXPLORER AI BACKTEST STARTED")
 print("=" * 60)
-print("\nDownloading historical data from Binance...")
+print("\nDownloading historical data from Binance (1H timeframe)...")
 
-# Download historical data
+# Download historical data - 1H timeframe for better signals
 exchange = ExchangeManager()
 
 try:
     candles = exchange.get_ohlcv(
         "binance",
         "BTC/USDT",
-        "5m",
+        "1h",  # Changed from 5m to 1h
         500
     )
     print(f"✅ Downloaded {len(candles)} candles\n")
