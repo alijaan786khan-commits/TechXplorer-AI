@@ -1,6 +1,5 @@
 import csv
 import os
-from datetime import datetime
 
 
 class TradeLogger:
@@ -27,6 +26,7 @@ class TradeLogger:
                     "Balance"
                 ])
 
+            from datetime import datetime
             writer.writerow([
                 datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 action,
