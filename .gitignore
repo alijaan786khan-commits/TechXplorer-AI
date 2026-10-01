@@ -1,0 +1,12 @@
+# Ignore Python cache files
+autoenv
+__pycache__/
+*.pyc
+*.pyo
+
+# Node build output
+frontend/node_modules/
+frontend/build/
+
+# Environment
+.env
