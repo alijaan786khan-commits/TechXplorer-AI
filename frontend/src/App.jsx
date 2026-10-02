@@ -1,68 +1,44 @@
 import React, { useEffect, useState } from 'react';
 import './index.css';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 
 const API_URL = 'http://127.0.0.1:8000';
 
 function App() {
-  const [status, setStatus] = useState('stopped');
-  const [connected, setConnected] = useState(false);
-  const [config, setConfig] = useState(null);
-  const [stats, setStats] = useState({
-    total_trades: 0,
-    wins: 0,
-    losses: 0,
-    win_rate: 0,
-    total_profit: 0,
-    avg_profit: 0
-  });
-  const [trades, setTrades] = useState([]);
-  const [price, setPrice] = useState(62500);
-  const [position, setPosition] = useState(null);
-  const [history, setHistory] = useState([
-    { time: '09:00', price: 62000 },
-    { time: '09:10', price: 62500 },
-    { time: '09:20', price: 62360 },
-    { time: '09:30', price: 62800 },
-    { time: '09:40', price: 63200 },
-    { time: '09:50', price: 63150 },
-    { time: '10:00', price: 63500 }
-  ]);
+  const [status, setStatus] = useState('running');
+  const [connected, setConnected] = useState(true);
+  const [price, setPrice] = useState(63520.45);
 
-  const loadData = async () => {
-    try {
-      const response = await fetch(`${API_URL}/chat?prompt=status`);
-      const data = await response.json();
-      console.log('API response:', data);
-    } catch (error) {
-      console.log('API connection info:', error.message);
-    }
-  };
+  const history = [
+    { time: '09:00', price: 62000 },
+    { time: '09:15', price: 62300 },
+    { time: '09:30', price: 62800 },
+    { time: '09:45', price: 63100 },
+    { time: '10:00', price: 63520 }
+  ];
 
   useEffect(() => {
-    loadData();
-    const timer = setInterval(loadData, 5000);
+    const timer = setInterval(() => {
+      setPrice((prev) => Number((prev + (Math.random() - 0.5) * 100).toFixed(2)));
+    }, 4000);
     return () => clearInterval(timer);
   }, []);
 
-  const handleControl = async (command) => {
-    try {
-      const newStatus = command === 'start' ? 'running' : 'stopped';
-      setStatus(newStatus);
-      console.log(`Bot ${newStatus}`);
-    } catch (error) {
-      console.error('control failed', error);
-    }
+  const handleControl = (command) => {
+    const nextStatus = command === 'start' ? 'running' : 'stopped';
+    setStatus(nextStatus);
+    setConnected(command === 'start');
   };
 
   return (
     <div className="app-shell">
+      {/* SIDEBAR */}
       <aside className="sidebar">
         <div className="brand-block">
-          <div className="brand-icon">TX</div>
+          <div className="brand-icon">XT</div>
           <div>
-            <p className="eyebrow">Trading System</p>
-            <h1>TechXplorer AI</h1>
+            <p className="eyebrow">AI Trading Terminal</p>
+            <h1>Xplorer Trade</h1>
           </div>
         </div>
 
@@ -71,108 +47,153 @@ function App() {
           <button className="nav-item">Portfolio</button>
           <button className="nav-item">Signals</button>
           <button className="nav-item">Analytics</button>
-          <button className="nav-item">Settings</button>
         </nav>
 
         <div className="mini-panel">
           <p className="label">Market</p>
           <h3>BTC/USDT</h3>
-          <p className="value">${price.toLocaleString()}</p>
+          <p className="value">${price.toLocaleString(undefined, { maximumFractionDigits: 2 })}</p>
         </div>
       </aside>
 
+      {/* MAIN CONTENT */}
       <main className="main-panel">
-        <header className="topbar">
+        {/* TOP BAR */}
+        <div className="topbar">
           <div>
-            <p className="eyebrow muted">Live Bot Status</p>
+            <p className="eyebrow">Live Bot Status</p>
             <h2>{status.toUpperCase()}</h2>
           </div>
-
           <div className="topbar-actions">
             <span className={`connection ${connected ? 'online' : 'offline'}`}>
-              {connected ? '🟢 Connected' : '🔴 Offline'}
+              {connected ? '● Connected' : '● Offline'}
             </span>
             {status === 'running' ? (
-              <button className="danger-btn" onClick={() => handleControl('stop')}>⏹ Stop Bot</button>
+              <button className="danger-btn" onClick={() => handleControl('stop')}>Stop Bot</button>
             ) : (
-              <button className="primary-btn" onClick={() => handleControl('start')}>▶ Start Bot</button>
+              <button className="primary-btn" onClick={() => handleControl('start')}>Start Bot</button>
             )}
           </div>
-        </header>
+        </div>
 
-        <section className="metrics-grid">
-          <MetricCard title="Balance" value="$10,000" tone="blue" />
-          <MetricCard title="PnL" value="$245.50" tone="green" />
-          <MetricCard title="Win Rate" value="68%" tone="purple" />
-          <MetricCard title="Total Trades" value="25" tone="orange" />
-        </section>
+        {/* METRICS GRID */}
+        <div className="metrics-grid">
+          <div className="metric-card cyan">
+            <p>Balance</p>
+            <h3>$10,000</h3>
+          </div>
+          <div className="metric-card green">
+            <p>PnL</p>
+            <h3>+$245.50</h3>
+          </div>
+          <div className="metric-card purple">
+            <p>Win Rate</p>
+            <h3>68%</h3>
+          </div>
+          <div className="metric-card gold">
+            <p>Total Trades</p>
+            <h3>25</h3>
+          </div>
+        </div>
 
-        <section className="content-grid">
+        {/* CONTENT GRID */}
+        <div className="content-grid">
+          {/* CHART CARD */}
           <div className="card chart-card">
             <div className="card-header">
               <div>
-                <p className="eyebrow muted">Price Chart</p>
+                <p className="eyebrow">Price Chart</p>
                 <h3>BTC / USDT</h3>
               </div>
-              <div className="price-badge">${price.toLocaleString()}</div>
+              <div className="price-badge">${price.toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
             </div>
-
             <div className="chart-box">
-              <ResponsiveContainer width="100%" height={260}>
+              <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={history}>
                   <defs>
                     <linearGradient id="fillPrice" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#5ae4ff" stopOpacity={0.8} />
-                      <stop offset="95%" stopColor="#5ae4ff" stopOpacity={0.1} />
+                      <stop offset="5%" stopColor="#59d9ff" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="#59d9ff" stopOpacity={0.1} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid stroke="#2c3356" strokeDasharray="4 4" />
-                  <XAxis dataKey="time" stroke="#7f88b1" />
-                  <YAxis stroke="#7f88b1" />
+                  <CartesianGrid stroke="#2c3a5b" strokeDasharray="3 3" />
+                  <XAxis dataKey="time" stroke="#89a4d7" style={{ fontSize: '12px' }} />
+                  <YAxis stroke="#89a4d7" style={{ fontSize: '12px' }} />
                   <Tooltip />
-                  <Area type="monotone" dataKey="price" stroke="#5ae4ff" fill="url(#fillPrice)" strokeWidth={2} />
+                  <Area type="monotone" dataKey="price" stroke="#59d9ff" fill="url(#fillPrice)" strokeWidth={2} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
           </div>
 
-          <div className="card status-card">
+          {/* POSITION CARD */}
+          <div className="card position-card">
             <div className="card-header">
               <div>
-                <p className="eyebrow muted">Position</p>
+                <p className="eyebrow">Position</p>
                 <h3>Current Trade</h3>
               </div>
             </div>
-
             <div className="position-box">
-              <div className="row"><span>Entry Price</span><strong>$62,450.00</strong></div>
-              <div className="row"><span>Stop Loss</span><strong>$61,950.00</strong></div>
-              <div className="row"><span>Take Profit</span><strong>$63,450.00</strong></div>
-              <div className="row"><span>Current P&L</span><strong style={{color: '#34d399'}}>+$125.50</strong></div>
+              <div className="row">
+                <span>Signal</span>
+                <strong className="positive">BUY</strong>
+              </div>
+              <div className="row">
+                <span>Entry Price</span>
+                <strong>$62,450.00</strong>
+              </div>
+              <div className="row">
+                <span>Stop Loss</span>
+                <strong>$61,950.00</strong>
+              </div>
+              <div className="row">
+                <span>Take Profit</span>
+                <strong>$63,450.00</strong>
+              </div>
+              <div className="row">
+                <span>Current P&L</span>
+                <strong className="positive">+$125.50</strong>
+              </div>
             </div>
           </div>
-        </section>
+        </div>
 
-        <section className="bottom-grid">
+        {/* BOTTOM GRID */}
+        <div className="bottom-grid">
+          {/* BOT CONFIG */}
           <div className="card">
             <div className="card-header">
               <div>
-                <p className="eyebrow muted">Settings</p>
+                <p className="eyebrow">Configuration</p>
                 <h3>Bot Config</h3>
               </div>
             </div>
             <div className="settings-box">
-              <div className="row"><span>Exchange</span><strong>Binance</strong></div>
-              <div className="row"><span>Timeframe</span><strong>1H</strong></div>
-              <div className="row"><span>Risk per Trade</span><strong>2%</strong></div>
-              <div className="row"><span>Strategy</span><strong>EMA + RSI + MACD</strong></div>
+              <div className="row">
+                <span>Exchange</span>
+                <strong>Binance</strong>
+              </div>
+              <div className="row">
+                <span>Timeframe</span>
+                <strong>1H</strong>
+              </div>
+              <div className="row">
+                <span>Risk per Trade</span>
+                <strong>2%</strong>
+              </div>
+              <div className="row">
+                <span>Strategy</span>
+                <strong>EMA + RSI</strong>
+              </div>
             </div>
           </div>
 
+          {/* RECENT TRADES */}
           <div className="card">
             <div className="card-header">
               <div>
-                <p className="eyebrow muted">Recent</p>
+                <p className="eyebrow">Recent</p>
                 <h3>Trades</h3>
               </div>
             </div>
@@ -180,31 +201,22 @@ function App() {
               <div className="trade-item">
                 <span>BUY</span>
                 <span>BTC/USDT</span>
-                <span style={{color: '#34d399'}}>+2.1%</span>
+                <span className="positive">+2.1%</span>
               </div>
               <div className="trade-item">
                 <span>SELL</span>
                 <span>BTC/USDT</span>
-                <span style={{color: '#34d399'}}>+1.8%</span>
+                <span className="positive">+1.8%</span>
               </div>
               <div className="trade-item">
                 <span>BUY</span>
                 <span>BTC/USDT</span>
-                <span style={{color: '#ff6b6b'}}>-0.5%</span>
+                <span className="negative">-0.5%</span>
               </div>
             </div>
           </div>
-        </section>
+        </div>
       </main>
-    </div>
-  );
-}
-
-function MetricCard({ title, value, tone }) {
-  return (
-    <div className={`metric-card ${tone}`}>
-      <p>{title}</p>
-      <h3>{value}</h3>
     </div>
   );
 }
