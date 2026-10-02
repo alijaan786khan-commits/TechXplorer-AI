@@ -6,16 +6,19 @@ html, body, #root {
   margin: 0;
   height: 100%;
   font-family: 'Segoe UI', Inter, sans-serif;
-  background: #040b14;
+  background: #0a0e27;
   color: #edf3ff;
+  overflow: hidden;
 }
 
 body {
   min-height: 100vh;
   background:
-    radial-gradient(circle at 12% 10%, rgba(90, 200, 255, 0.18), transparent 22%),
-    radial-gradient(circle at 90% 80%, rgba(56, 189, 248, 0.12), transparent 20%),
-    linear-gradient(180deg, #030b16 0%, #071522 100%);
+    radial-gradient(circle at 15% 20%, rgba(139, 92, 246, 0.25), transparent 25%),
+    radial-gradient(circle at 85% 75%, rgba(59, 130, 246, 0.2), transparent 30%),
+    radial-gradient(circle at 50% 50%, rgba(167, 139, 250, 0.15), transparent 40%),
+    linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #0f0f2e 100%);
+  position: fixed;
 }
 
 button {
@@ -26,15 +29,17 @@ button {
 .app-shell {
   display: flex;
   min-height: 100vh;
-  background: rgba(3, 10, 18, 0.96);
+  height: 100vh;
+  overflow: hidden;
 }
 
 .sidebar {
   width: 270px;
-  background: rgba(10, 17, 28, 0.96);
+  background: rgba(15, 20, 40, 0.92);
   border-right: 1px solid rgba(138, 163, 221, 0.12);
   padding: 24px 18px;
   box-shadow: inset -1px 0 0 rgba(255,255,255,0.04);
+  overflow-y: auto;
 }
 
 .brand-block {
@@ -125,15 +130,17 @@ h1, h2, h3, p {
 
 .main-panel {
   flex: 1;
-  padding: 28px;
-  overflow-y: auto;
+  padding: 24px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 22px;
+  margin-bottom: 18px;
   gap: 16px;
 }
 
@@ -191,29 +198,30 @@ h1, h2, h3, p {
 
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(180px, 1fr));
-  gap: 18px;
-  margin-bottom: 22px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 16px;
+  flex-shrink: 0;
 }
 
 .metric-card {
-  padding: 18px 18px 14px;
-  border-radius: 18px;
+  padding: 16px 14px 12px;
+  border-radius: 16px;
   border: 1px solid rgba(138, 163, 221, 0.18);
   background: rgba(18, 24, 41, 0.92);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 12px 22px rgba(0,0,0,0.12);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 8px 16px rgba(0,0,0,0.12);
 }
 
 .metric-card p {
   color: #8ba0d4;
-  margin-bottom: 10px;
-  font-size: 12px;
+  margin-bottom: 8px;
+  font-size: 11px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .metric-card h3 {
-  font-size: 2rem;
+  font-size: 1.6rem;
   font-weight: 700;
 }
 
@@ -224,24 +232,29 @@ h1, h2, h3, p {
 
 .content-grid, .bottom-grid {
   display: grid;
-  grid-template-columns: 1.5fr 0.9fr;
-  gap: 18px;
-  margin-bottom: 18px;
+  grid-template-columns: 1.4fr 0.85fr;
+  gap: 14px;
+  flex: 1;
+  min-height: 0;
 }
 
 .card {
   background: rgba(18, 24, 41, 0.96);
   border: 1px solid rgba(138, 163, 221, 0.18);
-  border-radius: 18px;
-  padding: 18px;
-  box-shadow: 0 12px 28px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.03);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.03);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
+  flex-shrink: 0;
 }
 
 .price-badge {
@@ -251,24 +264,30 @@ h1, h2, h3, p {
   border-radius: 999px;
   padding: 8px 12px;
   font-weight: 700;
+  font-size: 0.9rem;
 }
 
 .chart-box {
-  height: 300px;
+  height: 200px;
+  flex: 1;
+  min-height: 0;
 }
 
 .position-box, .settings-box {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
+  overflow-y: auto;
+  max-height: 100%;
 }
 
 .row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 0;
+  padding: 8px 0;
   border-bottom: 1px solid rgba(138, 163, 221, 0.12);
+  font-size: 0.9rem;
 }
 
 .row span {
@@ -286,17 +305,18 @@ h1, h2, h3, p {
 .trade-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
+  overflow-y: auto;
 }
 
 .trade-item {
   display: flex;
   justify-content: space-between;
-  padding: 12px 10px;
-  border-radius: 10px;
+  padding: 10px 8px;
+  border-radius: 8px;
   background: rgba(255,255,255,0.02);
   border: 1px solid rgba(138, 163, 221, 0.12);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 @media (max-width: 980px) {
